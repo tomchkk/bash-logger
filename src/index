@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-__log_slog_max_level="${1:?"A max level is required"}"
-__log_slog_channel="${2:?"A channel is required"}"
+__bash_logger_max_level="${1:?"A max level is required"}"
+__bash_logger_channel="${2:?"A channel is required"}"
 
-__log_slog_prefix=$([[ -n $3 ]] && echo " $3 ")
+__bash_logger_prefix=$([[ -n $3 ]] && echo " $3 ")
 
 ##
 # Gets the numerical value for a log level
 ##
-__log_slog::get_level_value() {
+__bash_logger::get_level_value() {
     local level="${1:?"A log level value is required"}"
     local levels=(
         "EMERGENCY" "ALERT" "CRITICAL" "ERROR" "WARNING" "NOTICE" "INFO" "DEBUG"
@@ -25,11 +25,11 @@ __log_slog::get_level_value() {
 # Determines if, given a set maximum allowable level, the given level has been
 # reached.
 ##
-__log_slog::level_reached() {
+__bash_logger::level_reached() {
     local level="${1:?"A log level value is required"}"
 
-    local required="$(__log_slog::get_level_value $level)"
-    local max="$(__log_slog::get_level_value $__log_slog_max_level)"
+    local required="$(__bash_logger::get_level_value $level)"
+    local max="$(__bash_logger::get_level_value $__bash_logger_max_level)"
 
     [[ $required -le $max ]] && echo true || echo false
 }
@@ -49,12 +49,12 @@ log::log() {
     local timestamp="[$(date +"%Y-%m-%d %H:%M:%S")]"
     local separator="-"
 
-    if [[ ! -f "$__log_slog_channel" ]]; then
-        touch "$__log_slog_channel"
+    if [[ ! -f "$__bash_logger_channel" ]]; then
+        touch "$__bash_logger_channel"
     fi
 
-    if $(__log_slog::level_reached $level) && [[ -w "$__log_slog_channel" ]]; then
-        echo "$__log_slog_prefix$timestamp $level $separator $message $context" >> "$__log_slog_channel"
+    if $(__bash_logger::level_reached $level) && [[ -w "$__bash_logger_channel" ]]; then
+        echo "$__bash_logger_prefix$timestamp $level $separator $message $context" >> "$__bash_logger_channel"
     fi
 }
 
