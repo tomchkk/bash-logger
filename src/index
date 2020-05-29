@@ -53,8 +53,10 @@ log::log() {
         touch "$__bash_logger_channel"
     fi
 
-    if $(__bash_logger::level_reached $level) && [[ -w "$__bash_logger_channel" ]]; then
-        echo "$__bash_logger_prefix$timestamp $level $separator $message $context" >> "$__bash_logger_channel"
+    if $(__bash_logger::level_reached "$level") && [[ -w "$__bash_logger_channel" ]]
+    then
+        echo "$__bash_logger_prefix$timestamp $level $separator $message $context" \
+            >> "$__bash_logger_channel"
     fi
 }
 
