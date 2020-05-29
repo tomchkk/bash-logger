@@ -14,7 +14,7 @@ __log_slog::get_level_value() {
         "EMERGENCY" "ALERT" "CRITICAL" "ERROR" "WARNING" "NOTICE" "INFO" "DEBUG"
     )
 
-    for i in ${!levels[*]}; do
+    for i in ${!levels[@]}; do
         if [[ "$level" == "${levels[$i]}" ]]; then
             echo "$i" && break
         fi
