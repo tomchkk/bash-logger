@@ -41,10 +41,9 @@ log::log() {
     local level="${1:?"A log level value is required"}"
     local message="$2"
     local context=${@:3}
-    local contextMsg
 
     if [[ -n "$context" ]]; then
-        contextMsg="{ "context:" $(echo $context | sed 's/;*$//g') }"
+        context="{ $(echo $context | sed 's/;*$//g') }"
     fi
 
     local timestamp="[$(date +"%Y-%m-%d %H:%M:%S")]"
@@ -55,7 +54,7 @@ log::log() {
     fi
 
     if $(__log_slog::level_reached $level) && [[ -w "$__log_slog_channel" ]]; then
-        echo "$__log_slog_prefix$timestamp $level $separator $message $contextMsg" >> "$__log_slog_channel"
+        echo "$__log_slog_prefix$timestamp $level $separator $message $context" >> "$__log_slog_channel"
     fi
 }
 
