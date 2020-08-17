@@ -2,37 +2,7 @@
 
 __bash_logger_max_level="${1:?"A max level is required"}"
 __bash_logger_channel="${2:?"A channel is required"}"
-
 __bash_logger_prefix=$([[ -n $3 ]] && echo " $3 ")
-
-##
-# Gets the numerical value for a log level
-##
-__bash_logger::get_level_value() {
-    local level="${1:?"A log level value is required"}"
-    local levels=(
-        "EMERGENCY" "ALERT" "CRITICAL" "ERROR" "WARNING" "NOTICE" "INFO" "DEBUG"
-    )
-
-    for i in ${!levels[@]}; do
-        if [[ "$level" == "${levels[$i]}" ]]; then
-            echo "$i" && break
-        fi
-    done
-}
-
-##
-# Determines if, given a set maximum allowable level, the given level has been
-# reached.
-##
-__bash_logger::level_reached() {
-    local level="${1:?"A log level value is required"}"
-
-    local required="$(__bash_logger::get_level_value $level)"
-    local max="$(__bash_logger::get_level_value $__bash_logger_max_level)"
-
-    [[ $required -le $max ]] && echo true || echo false
-}
 
 ##
 # Attempt to log a message.
@@ -55,7 +25,7 @@ log::log() {
 
     if $(__bash_logger::level_reached "$level") && [[ -w "$__bash_logger_channel" ]]
     then
-        echo "$__bash_logger_prefix$timestamp $level $separator $message $context" \
+        echo "${__bash_logger_prefix}$timestamp $level $separator $message $context" \
             >> "$__bash_logger_channel"
     fi
 }
@@ -87,4 +57,33 @@ log::info() {
 }
 log::debug() {
     log::log "DEBUG" "$1" ${@:2}
+}
+
+##
+# Gets the numerical value for a log level
+##
+__bash_logger::get_level_value() {
+    local level="${1:?"A log level value is required"}"
+    local levels=(
+        "EMERGENCY" "ALERT" "CRITICAL" "ERROR" "WARNING" "NOTICE" "INFO" "DEBUG"
+    )
+
+    for i in ${!levels[@]}; do
+        if [[ "$level" == "${levels[$i]}" ]]; then
+            echo "$i" && break
+        fi
+    done
+}
+
+##
+# Determines if, given a set maximum allowable level, the given level has been
+# reached.
+##
+__bash_logger::level_reached() {
+    local level="${1:?"A log level value is required"}"
+
+    local required="$(__bash_logger::get_level_value $level)"
+    local max="$(__bash_logger::get_level_value $__bash_logger_max_level)"
+
+    [[ $required -le $max ]] && echo true || echo false
 }
